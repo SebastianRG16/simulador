@@ -14,6 +14,8 @@ export function FormPage() {
   const [angulo, setAngulo] = useState(""); // ángulo
   const [iniciado, setIniciado] = useState(false); // estado de inicio
   const [reload, setReload] = useState(false); // recargar punto
+  const [yf , setYf] = useState(0)
+  const [xf , setXf] = useState(0)
 
   const VolverTirar = () => {
     setReload(true); // Establecer reload en true
@@ -51,25 +53,54 @@ export function FormPage() {
         setX(newX);
         setY(newY);
         setTime((prevTime) => prevTime + 0.01); // Incrementar el tiempo en cada iteración
-        if (
-          Math.round(newY) > calculo - 120 &&
-          Math.round(newY) < calculo - 20
-        ) {
-          console.log("¡Estoy en Y!");
-        }
-        if (Math.round(newX) == window.innerWidth) {
-          console.log("¡Estoy en X!");
-        }
+        // if (
+        //   Math.round(newY) > calculo - 120 &&
+        //   Math.round(newY) < calculo - 20
+        // ) {
+        // }
+        // if (Math.round(newX) == window.innerWidth) {
+        // }
         setCalculo(window.innerHeight - Math.round(randomY));
-        // console.log(newY)
         if (
           (Math.round(newY) > calculo - 120 &&
           Math.round(newY) < calculo - 20) &&
-          Math.round(newX) == window.innerWidth
-        ) {
+          (Math.round(newX) > window.innerWidth -20 && Math.round(newX) < window.innerWidth)
+          
+        ) 
+        {
+          const B = (velocidad / 3.6) *  Math.sin(angle * (Math.PI / 180));
+          const C = Math.round(newY)
+          const A = 4.9
+          const raiz = -4 *(A)*(C)
+          const b2 = B * B
+          const raizResta = (b2) - (raiz)
+          const solucionRaiz = Math.sqrt(raizResta)
+          const divisor =2*(A)
+          const resultTop1 = B - solucionRaiz
+          const resultTop2 = B + solucionRaiz
+          if (resultTop1 >= 0) {
+            const resultFin1 = resultTop1 / divisor
+            setYf(resultFin1) 
+          } else {
+            const resultFin2 = resultTop2 / divisor
+            setYf(resultFin2)
+          }
+
+          //ALCANCE HORIZONTAL EN CUALQUIER TIEMPO
+          console.log('estos es yf',yf)
+
+          const vi = (velocidad / 3.6)
+          const T = yf
+          const angleRadianes = (angle * Math.PI) / 180;
+          const cosT = (Math.cos(angleRadianes))
+          const parentecis = vi * cosT
+          const resultado = parentecis * T
+          setXf(resultado)
+          console.log('estos es xf',xf)
+
           Swal.fire({
             title: '¡FELICIDADES!',
-            text: 'Tuviste un tiro exitoso, prueba ahora otro punto',
+            text: `Tuviste un tiro exitoso, el recorrido duro ${Math.round(yf)} s con una distancia de ${Math.round(xf)} m, prueba ahora otro punto`,
             icon: 'success',
             confirmButtonText: 'Continuar',
           }).then((result) => {
